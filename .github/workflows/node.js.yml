@@ -13,25 +13,29 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
-  
+ 
     steps:
     - uses: actions/checkout@v3
     - run: |
         npm install 
         npm run build
+    - uses: actions/upload-artifact@main
+      with:
+          name: webpack artifacts
+          path: public/   
   test:
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
-      - uses: actions/upload-artifact@master
-        with:
-    needs: build
-          path: public/
         node-version: [12.x, 14.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
     - uses: actions/checkout@v3
+    - uses: actions/download-artifact@main
+      with: 
+        name: webpack artifacts
+        path: public
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
